@@ -1,60 +1,65 @@
 #include<stdio.h>
-#include <stdlib.h> 
-#include <unistd.h> 
-#include <sys/wait.h> 
-void performOperation(char operation, int a, int b) { 
-    int result = 0; 
-    switch (operation) { 
-        case '+': 
-            result = a + b; 
-            printf("Result: %d\n", result); 
-            exit(result); 
-        case '-':  
-            result = a - b; 
-            printf("Result: %d\n", result); 
-            exit(result); 
-        case '*': 
-            result = a * b; 
-            printf("Result: %d\n", result); 
-            exit(result); 
-        case '/': 
-            if (b != 0) { 
-                result = a / b; 
-                printf("Result: %d\n", result); 
-                exit(result); 
-            } else { 
-                printf("Error: Division by zero\n"); 
-                exit(EXIT_FAILURE); 
-            } 
-        default: 
-            printf("Invalid operation\n"); 
-            exit(EXIT_FAILURE); 
-    } 
-} 
-int main() { 
-char operation; 
-int operand1, operand2, status; 
-printf("Enter an operation (+, -, *, /): "); 
-scanf(" %c", &operation); // Notice the space before %c to catch any leading whitespace 
-printf("Enter the first number: "); 
-scanf("%d", &operand1); 
-printf("Enter the second number: "); 
-scanf("%d", &operand2); 
-pid_t pid = fork(); 
-if (pid < 0) { 
-perror("fork"); 
-return EXIT_FAILURE; 
-} else if (pid == 0) { 
-// Child process 
-performOperation(operation, operand1, operand2); 
-} else { 
-// Parent process waits for child to complete 
-waitpid(pid, &status, 0); 
-if (WIFEXITED(status)) { 
-printf("Child process exited with result = %d\n", WEXITSTATUS(status)); 
-} else { 
-printf("Child process did not terminate successfully\n"); 
-} 
-} 
-return EXIT_SUCCESS;
+#include<conio.h>
+#include<time.h>
+#include<stdlib.h>
+
+int partition(int a[],int low,int high)
+{
+    int i,j,key,temp;
+    key = a[low];
+    i=low+1;
+    j=high;
+    while(1)
+    {
+        while(i<high && key>=a[i])
+            i++;
+        while(a[j]>key)
+            j--;
+        if(i<j)
+        {
+            temp=a[i];
+            a[i]=a[j];
+            a[j]=temp;
+        }
+        else
+        {
+            temp=a[low];
+            a[low]=a[j];
+            a[j]=temp;
+
+            return j;
+        }
+        
+    }
+}
+int quicksort(int a[],int low,int high)
+{
+    int j;
+    if(low<high)
+    {
+        j=partition(a,low,high);
+        quicksort(a,low,j-1);
+        quicksort(a,j+1,high);
+    }
+}
+int main()
+{
+    int i,n,a[100];
+    float start,end,timetaken;
+    printf("Enter the number of elements\n");
+    scanf("%d",&n);
+    for(i=0;i<n;i++)
+    {
+        a[i]=rand();
+        printf("%d  ",a[i]);
+    }
+    start = clock();
+    quicksort(a,0,n-1);
+    end = clock();
+    printf("\nThe sorted array is\n");
+    for(i=0;i<n;i++)
+    {
+        printf("%d  ",a[i]);
+    }
+    printf("\nTotal time taken to sort the array is %f",(end-start)/CLOCKS_PER_SEC);
 }
